@@ -1,0 +1,31 @@
+{
+  "patients": [
+    {
+      "id": 1,
+      "fullName": "Test Patient",
+      "age": 30,
+      "gender": "Female",
+      "phone": "1234567890",
+      "email": ""
+    },
+    {
+      "id": 2,
+      "fullName": "Test Patient",
+      "age": 30,
+      "gender": "Female",
+      "phone": "1234567890",
+      "email": "abcd@1234"
+    }
+  ],
+  "records": [
+    {
+      "id": 1,
+      "patientId": 2,
+      "date": "2025-11-25",
+      "weightKg": 70,
+      "bmi": 23,
+      "bmr": 1500,
+      "notes": "First visit"
+    }
+  ]
+}
