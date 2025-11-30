@@ -600,3 +600,67 @@ College: Dublin Business School
 
 Course: (add module name)
 
+
+
+📦 Running Automated Tests (Jest)
+
+
+
+Follow these steps to run the automated test suite used in this project:
+
+
+
+Open a terminal inside the backend folder:
+
+
+
+cd backend
+
+
+
+
+
+Install all required backend dependencies:
+
+
+
+npm install
+
+
+
+
+
+Ensure the backend server is running in another window:
+
+
+
+node server.js
+
+
+
+
+
+Run the Jest test suite:
+
+
+
+npm test
+
+
+
+
+
+The following tests will run:
+
+
+
+patient.test.js – verifies that the database file loads correctly
+
+
+
+api.test.js – integration test that checks the API root endpoint
+
+
+
+All tests must pass for the system to be considered fully operational.
+
