@@ -1,120 +1,122 @@
-📌 Metabolism Tracker — Clinic Information System
+* # &nbsp;Metabolism Tracker — Clinic Information System
 
 
 
-A full-stack JavaScript-based information system built for a real clinic to track:
+A full-stack JavaScript-based information system built for a clinic to track:
 
 
 
-Patient demographic details
+&nbsp;	Patient demographic details
 
 
 
-Metabolism records (Weight, BMI, BMR, Notes, Date)
+&nbsp;	Metabolism records (Weight, BMI, BMR, Notes, Date)
 
 
 
-CRUD operations via a custom backend API
+&nbsp;	CRUD operations through a custom backend API
 
 
 
-Frontend interface for clinic staff
+&nbsp;	Frontend interface for clinic staff
 
 
 
-JSON-file based lightweight database
+&nbsp;	lightweight database based on a JSON File 
 
 
 
-Automated testing (coming next section)
+&nbsp;	Automated testing
 
 
 
-This project was built as part of a university module focusing on:
+* This project is built as part of a university module focusing on:
 
 
 
-API design
+&nbsp;	API design
 
 
 
-CRUD implementation
+&nbsp;	CRUD implementation
 
 
 
-Folder architecture
+&nbsp;	Folder architecture
 
 
 
-Testing
+&nbsp;	Testing
 
 
 
-Version control (Git \& GitHub)
+&nbsp;	Version control (Git \& GitHub)
 
 
 
-Real-world applied information systems
+&nbsp;	Real-world applied information systems
 
 
 
-🚀 Technologies Used
+* &nbsp;Technologies Used
 
 
 
-Backend:
+1. Backend:
 
 
 
-Node.js
+&nbsp;	Node.js
 
 
 
-Express.js
+&nbsp;	Express.js
 
 
 
-CORS
+&nbsp;	CORS
 
 
 
-JSON File Database (db.json)
+&nbsp;	JSON File Database (db.json)
 
 
 
-Custom-built CRUD API
+&nbsp;	Custom-built CRUD API
 
 
 
-Frontend:
+2.Frontend:
 
 
 
-HTML5
+&nbsp;	HTML5
 
 
 
-Vanilla JavaScript
+&nbsp;	Vanilla JavaScript
 
 
 
-Fetch API
+&nbsp;	Fetch API
 
 
 
-Version Control:
+3.Version Control:
 
 
 
-Git
+&nbsp;	Git
 
 
 
-GitHub
+&nbsp;	GitHub
 
 
 
-🗂 Project Folder Structure
+* Project Folder Structure
+
+
 
 metabolism-tracker/
 
@@ -122,483 +124,71 @@ metabolism-tracker/
 
 ├── backend/
 
-│   ├── server.js          # Main API server
+│   ├── server.js  - Main API server
 
-│   ├── db.json            # JSON database
+│   ├── db.json    - JSON database
 
-│   ├── package.json       # Backend dependencies
+│   ├── package.json  -Backend dependencies
 
-│   └── node\_modules/      # Auto-installed dependencies (ignored in Git)
+│   └── node\_modules/  -Auto-installed dependencies
 
 │
 
 ├── frontend/
 
-│   ├── index.html         # Main UI
+│   ├── index.html  - Main UI
 
-│   └── app.js             # API calls + UI logic
+│   └── app.js      - API calls + UI logic
 
 │
 
-└── README.md              # Documentation
+└── README.md       - Documentation
 
 
 
-⚙️ Installation Instructions (FOR PROFESSOR)
 
 
+The endpoints are tested using the frontend UI.
 
-To run this project locally:
 
 
+* &nbsp;Key Features
 
-1\. Download or clone the project
 
-git clone https://github.com/deizii1981-bot/metabolism-tracker
 
-cd metabolism-tracker
+1\. Add patients
 
+2\. View patients
 
+3\. Add metabolism records
 
-2\. Install backend dependencies
+4\. CRUD for records
 
-cd backend
+5\. JSON local DB
 
-npm install
+6\. Full working UI
 
+7\. Full working backend API
 
+8\. GitHub version control
 
+9\. Real-world architecture
 
 
-This restores the node\_modules folder.
 
 
-
-3\. Start the backend API
-
-node server.js
-
-
-
-
-
-If successful, it prints:
-
-
-
-Server listening on http://localhost:3000
-
-
-
-4\. Open the frontend
-
-
-
-Option A — double click:
-
-
-
-frontend/index.html
-
-
-
-
-
-Option B — launch from command line:
-
-
-
-cd ../frontend
-
-start index.html
-
-
-
-🧪 Testing the System
-
-
-
-The backend API exposes:
-
-
-
-Get all patients
-
-GET /api/patients
-
-
-
-Add a new patient
-
-POST /api/patients
-
-
-
-Get records for a patient
-
-GET /api/patients/:id/records
-
-
-
-Add a metabolism record
-
-POST /api/patients/:id/records
-
-
-
-Update a record
-
-PUT /api/records/:recordId
-
-
-
-Delete a record
-
-DELETE /api/records/:recordId
-
-
-
-
-
-These endpoints are tested using the frontend UI.
-
-
-
-📒 Key Features
-
-
-
-✔ Add patients
-
-✔ View patients
-
-✔ Add metabolism records
-
-✔ CRUD for records
-
-✔ JSON local DB
-
-✔ Full working UI
-
-✔ Full working backend API
-
-✔ GitHub version control
-
-✔ Real-world architecture
-
-
-
-🧑‍💻 Author
 
 
 
 Name: Anjali Patil
 
-Student ID: (you can add this)
+Student ID: 20079200
 
 College: Dublin Business School
 
-Course: (add module name)📌 Metabolism Tracker — Clinic Information System
+Metabolism Tracker — Clinic Information System
 
 
-
-A full-stack JavaScript-based information system built for a real clinic to track:
-
-
-
-Patient demographic details
-
-
-
-Metabolism records (Weight, BMI, BMR, Notes, Date)
-
-
-
-CRUD operations via a custom backend API
-
-
-
-Frontend interface for clinic staff
-
-
-
-JSON-file based lightweight database
-
-
-
-Automated testing (coming next section)
-
-
-
-This project was built as part of a university module focusing on:
-
-
-
-API design
-
-
-
-CRUD implementation
-
-
-
-Folder architecture
-
-
-
-Testing
-
-
-
-Version control (Git \& GitHub)
-
-
-
-Real-world applied information systems
-
-
-
-🚀 Technologies Used
-
-
-
-Backend:
-
-
-
-Node.js
-
-
-
-Express.js
-
-
-
-CORS
-
-
-
-JSON File Database (db.json)
-
-
-
-Custom-built CRUD API
-
-
-
-Frontend:
-
-
-
-HTML5
-
-
-
-Vanilla JavaScript
-
-
-
-Fetch API
-
-
-
-Version Control:
-
-
-
-Git
-
-
-
-GitHub
-
-
-
-🗂 Project Folder Structure
-
-metabolism-tracker/
-
-│
-
-├── backend/
-
-│   ├── server.js          # Main API server
-
-│   ├── db.json            # JSON database
-
-│   ├── package.json       # Backend dependencies
-
-│   └── node\_modules/      # Auto-installed dependencies (ignored in Git)
-
-│
-
-├── frontend/
-
-│   ├── index.html         # Main UI
-
-│   └── app.js             # API calls + UI logic
-
-│
-
-└── README.md              # Documentation
-
-
-
-⚙️ Installation Instructions (FOR PROFESSOR)
-
-
-
-To run this project locally:
-
-
-
-1\. Download or clone the project
-
-git clone https://github.com/deizii1981-bot/metabolism-tracker
-
-cd metabolism-tracker
-
-
-
-2\. Install backend dependencies
-
-cd backend
-
-npm install
-
-
-
-
-
-This restores the node\_modules folder.
-
-
-
-3\. Start the backend API
-
-node server.js
-
-
-
-
-
-If successful, it prints:
-
-
-
-Server listening on http://localhost:3000
-
-
-
-4\. Open the frontend
-
-
-
-Option A — double click:
-
-
-
-frontend/index.html
-
-
-
-
-
-Option B — launch from command line:
-
-
-
-cd ../frontend
-
-start index.html
-
-
-
-🧪 Testing the System
-
-
-
-The backend API exposes:
-
-
-
-Get all patients
-
-GET /api/patients
-
-
-
-Add a new patient
-
-POST /api/patients
-
-
-
-Get records for a patient
-
-GET /api/patients/:id/records
-
-
-
-Add a metabolism record
-
-POST /api/patients/:id/records
-
-
-
-Update a record
-
-PUT /api/records/:recordId
-
-
-
-Delete a record
-
-DELETE /api/records/:recordId
-
-
-
-
-
-These endpoints are tested using the frontend UI.
-
-
-
-📒 Key Features
-
-
-
-✔ Add patients
-
-✔ View patients
-
-✔ Add metabolism records
-
-✔ CRUD for records
-
-✔ JSON local DB
-
-✔ Full working UI
-
-✔ Full working backend API
-
-✔ GitHub version control
-
-✔ Real-world architecture
-
-
-
-🧑‍💻 Author
-
-
-
-Name: Anjali Patil
-
-Student ID: (you can add this)
-
-College: Dublin Business School
-
-Course: (add module name)
 
 
 
