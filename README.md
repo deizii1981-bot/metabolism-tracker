@@ -1,4 +1,4 @@
-* # &nbsp;Metabolism Tracker — Clinic Information System
+* #  Metabolism Tracker — Clinic Information System
 
 
 
@@ -6,27 +6,27 @@ A full-stack JavaScript-based information system built for a clinic to track:
 
 
 
-&nbsp;	Patient demographic details
+ 	Patient demographic details
 
 
 
-&nbsp;	Metabolism records (Weight, BMI, BMR, Notes, Date)
+ 	Metabolism records (Weight, BMI, BMR, Notes, Date)
 
 
 
-&nbsp;	CRUD operations through a custom backend API
+ 	CRUD operations through a custom backend API
 
 
 
-&nbsp;	Frontend interface for clinic staff
+ 	Frontend interface for clinic staff
 
 
 
-&nbsp;	lightweight database based on a JSON File 
+ 	lightweight database based on a JSON File
 
 
 
-&nbsp;	Automated testing
+ 	Automated testing
 
 
 
@@ -34,31 +34,31 @@ A full-stack JavaScript-based information system built for a clinic to track:
 
 
 
-&nbsp;	API design
+ 	API design
 
 
 
-&nbsp;	CRUD implementation
+ 	CRUD implementation
 
 
 
-&nbsp;	Folder architecture
+ 	Folder architecture
 
 
 
-&nbsp;	Testing
+ 	Testing
 
 
 
-&nbsp;	Version control (Git \& GitHub)
+ 	Version control (Git \& GitHub)
 
 
 
-&nbsp;	Real-world applied information systems
+ 	Real-world applied information systems
 
 
 
-* &nbsp;Technologies Used
+*  Technologies Used
 
 
 
@@ -66,23 +66,67 @@ A full-stack JavaScript-based information system built for a clinic to track:
 
 
 
-&nbsp;	Node.js
+ 	Node.js
 
 
 
-&nbsp;	Express.js
+ 	Express.js
 
 
 
-&nbsp;	CORS
+ 	CORS
 
 
 
-&nbsp;	JSON File Database (db.json)
+ 	JSON File Database (db.json)
 
 
 
-&nbsp;	Custom-built CRUD API
+ 	Custom-built CRUD API
+
+* &nbsp;API Endpoints (Backend Overview)
+
+
+
+&nbsp;   The backend is a simple REST-style API built with Node.js and Express.  
+
+&nbsp;   Key endpoints:
+
+
+
+&nbsp;   - `GET /`  
+
+&nbsp;   Returns a basic “API running” message. Used for quick health checks.
+
+
+
+&nbsp;   - `GET /patients`  
+
+&nbsp;   Returns the list of all patients stored in the JSON database.
+
+
+
+&nbsp;   - `POST /patients`  
+
+&nbsp;   Creates a new patient with metabolism-related details (e.g. age, weight, activity        level).
+
+
+
+&nbsp;   - `PUT /patients/:id`  
+
+&nbsp;   Updates an existing patient record.
+
+
+
+&nbsp;   - `DELETE /patients/:id`  
+
+&nbsp;   Deletes a patient record by ID.
+
+
+
+&nbsp;   All responses are returned in JSON format, and the data is stored in              `backend/db.json` for this prototype.
+
+
 
 
 
@@ -90,15 +134,15 @@ A full-stack JavaScript-based information system built for a clinic to track:
 
 
 
-&nbsp;	HTML5
+ 	HTML5
 
 
 
-&nbsp;	Vanilla JavaScript
+ 	Vanilla JavaScript
 
 
 
-&nbsp;	Fetch API
+ 	Fetch API
 
 
 
@@ -106,11 +150,11 @@ A full-stack JavaScript-based information system built for a clinic to track:
 
 
 
-&nbsp;	Git
+ 	Git
 
 
 
-&nbsp;	GitHub
+ 	GitHub
 
 
 
@@ -152,7 +196,7 @@ The endpoints are tested using the frontend UI.
 
 
 
-* &nbsp;Key Features
+*  Key Features
 
 
 
