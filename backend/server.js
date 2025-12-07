@@ -184,6 +184,15 @@ app.delete('/api/records/:recordId', (req, res) => {
 });
 
 // Start server
+// Simple health check endpoint so we can see if the API is running
+
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    message: 'Metabolism tracker API is running'
+  });
+});
+
 app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
 });
