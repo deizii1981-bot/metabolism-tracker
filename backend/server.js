@@ -1,9 +1,8 @@
 // Metabolism Tracker Backend API
-// Author: Anjali Patil
+// Name: Anjali Patil
 // Description:
-// Simple Express server that stores patients and metabolism records
-// in a JSON file (db.json). This API is used by the frontend form
-// to save and fetch patient data for the coursework project.
+// This server exposes endpoints to manage patient data and metabolism tracking.
+// Technologies: Node.js, Express, JSON file as a simple database.
 
 const express = require('express');
 const cors = require('cors');
