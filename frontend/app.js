@@ -58,6 +58,9 @@ async function addPatient() {
   const phone = patientPhoneInput.value.trim();
   const email = patientEmailInput.value.trim();
 
+const activityLevel = document.getElementById("patient-activityLevel").value;
+
+
   if (!fullName || !age || !gender || !phone) {
     showMessage('Full name, age, gender and phone are required.', true);
     return;
@@ -67,7 +70,15 @@ async function addPatient() {
     const response = await fetch(`${API_BASE}/api/patients`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName, age, gender, phone, email })
+      body: JSON.stringify({
+      fullName,
+      age,
+      gender,
+      phone,
+      email,
+      activityLevel   // <-- NEW FIELD SENT TO BACKEND
+})
+
     });
 
     if (!response.ok) {
@@ -84,6 +95,8 @@ async function addPatient() {
     patientGenderSelect.value = '';
     patientPhoneInput.value = '';
     patientEmailInput.value = '';
+    document.getElementById("patient-         activityLevel").value = '';
+
 
     loadPatients();
   } catch (err) {
