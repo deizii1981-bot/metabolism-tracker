@@ -65,22 +65,29 @@ app.get('/api/patients', (req, res) => {
 
 // CREATE new patient
 app.post('/api/patients', (req, res) => {
-  const { fullName, age, gender, phone, email } = req.body;
+const { fullName, age, gender, phone, email, activityLevel } = req.body;
+
 
   if (!fullName || !age || !gender || !phone) {
     return res.status(400).json({ message: 'fullName, age, gender and phone are required.' });
   }
 
-  const db = loadDB();
+  // Email format validation (very simple regex)
+if (email && !/^\S+@\S+\.\S+$/.test(email)) {
+  return res.status(400).json({ message: 'Invalid email format.' });
+}
 
-  const newPatient = {
-    id: getNextId(db.patients),
-    fullName,
-    age,
-    gender,
-    phone,
-    email: email || ''
-  };
+const newPatient = {
+  id: getNextId(db.patients),
+  fullName,
+  age,
+  gender,
+  phone,
+  email: email || '',
+  activityLevel: activityLevel || 'Not specified'
+};
+
+ 
 
   db.patients.push(newPatient);
   saveDB(db);

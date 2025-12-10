@@ -39,12 +39,18 @@ async function loadPatients() {
 
     patientSelect.innerHTML = '<option value="">-- Select patient --</option>';
 
-    patients.forEach(p => {
-      const option = document.createElement('option');
-      option.value = p.id;
-      option.textContent = `${p.fullName} (ID: ${p.id})`;
-      patientSelect.appendChild(option);
-    });
+   patients.forEach(p => {
+  const option = document.createElement('option');
+  option.value = p.id;
+
+  const label = p.activityLevel
+    ? `${p.fullName} (ID: ${p.id}, Activity: ${p.activityLevel})`
+    : `${p.fullName} (ID: ${p.id})`;
+
+  option.textContent = label;
+  patientSelect.appendChild(option);
+});
+ 
   } catch (err) {
     console.error(err);
     showMessage('Failed to load patients', true);
