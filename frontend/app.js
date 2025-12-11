@@ -147,6 +147,32 @@ async function loadRecordsForSelectedPatient() {
 
     //  Sort by date (newest first)records.sort((a, b) => new      Date(b.date) - new Date(a.date));
 
+    // helper: returns number of days between today and the record date
+function daysSince(dateString) {
+  const today = new Date();
+  const recordDate = new Date(dateString);
+  // use UTC to avoid timezone pitfalls
+  const diffMs = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) -
+                 Date.UTC(recordDate.getFullYear(), recordDate.getMonth(), recordDate.getDate());
+  return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+}
+
+records.forEach(record => {
+  const tr = document.createElement('tr');
+
+  tr.innerHTML = `
+      // --- sort by date (newest first) ---
+    records.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    // helper: returns number of days between today and the record date (UTC-safe)
+    function daysSince(dateString) {
+      const today = new Date();
+      const recordDate = new Date(dateString);
+      const diffMs = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) -
+                     Date.UTC(recordDate.getFullYear(), recordDate.getMonth(), recordDate.getDate());
+      return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    }
+
     records.forEach(record => {
       const tr = document.createElement('tr');
 
@@ -163,8 +189,25 @@ async function loadRecordsForSelectedPatient() {
         </td>
       `;
 
+      // highlight if record is within last 7 days
+      try {
+        const ageDays = daysSince(record.date);
+        if (ageDays >= 0 && ageDays <= 7) {
+          // light green background for recent entries
+          tr.style.backgroundColor = 'rgba(198, 255, 198, 0.6)';
+        } else {
+          tr.style.backgroundColor = '';
+        }
+      } catch (e) {
+        // If date parse fails, leave default styling
+        console.warn('Could not parse record date for highlighting:', record.date, e);
+      }
+
       recordsTableBody.appendChild(tr);
     });
+
+  recordsTableBody.appendChild(tr);
+});
 
     attachRecordButtonHandlers();
   } catch (err) {
