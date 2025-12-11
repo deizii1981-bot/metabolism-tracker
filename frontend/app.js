@@ -143,7 +143,10 @@ async function loadRecordsForSelectedPatient() {
       return;
     }
 
-    const records = await response.json();
+    let records = await response.json();
+
+    //  Sort by date (newest first)records.sort((a, b) => new      Date(b.date) - new Date(a.date));
+
     records.forEach(record => {
       const tr = document.createElement('tr');
 
