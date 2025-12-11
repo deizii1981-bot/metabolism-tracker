@@ -1,17 +1,19 @@
 const API_BASE = 'http://localhost:3000';
 
+
 const patientFullNameInput = document.getElementById('patient-fullName');
 const patientAgeInput = document.getElementById('patient-age');
 const patientGenderSelect = document.getElementById('patient-gender');
 const patientPhoneInput = document.getElementById('patient-phone');
 const patientEmailInput = document.getElementById('patient-email');
+const patientActivityLevelSelect = document.getElementById('patient-activityLevel');
 
 const addPatientBtn = document.getElementById('add-patient-btn');
 const refreshPatientsBtn = document.getElementById('refresh-patients-btn');
 const patientSelect = document.getElementById('patient-select');
 
 const selectedPatientLabel = document.getElementById('selected-patient-label');
-
+const recordHeightInput = document.getElementById('record-height');
 const recordDateInput = document.getElementById('record-date');
 const recordWeightInput = document.getElementById('record-weight');
 const recordBmiInput = document.getElementById('record-bmi');
@@ -21,6 +23,17 @@ const addRecordBtn = document.getElementById('add-record-btn');
 
 const recordsTableBody = document.getElementById('records-table-body');
 const messageElement = document.getElementById('message');
+ 
+function updateBMI() {
+  const weight = parseFloat(recordWeightInput.value);
+  const heightCm = parseFloat(recordHeightInput.value);
+
+  if (!isNaN(weight) && !isNaN(heightCm) && heightCm > 0) {
+    const heightM = heightCm / 100;
+    const bmi = weight / (heightM * heightM);
+    recordBmiInput.value = bmi.toFixed(1);
+  }
+}
 
 function showMessage(text, isError = false) {
   messageElement.textContent = text;
@@ -63,8 +76,8 @@ async function addPatient() {
   const gender = patientGenderSelect.value;
   const phone = patientPhoneInput.value.trim();
   const email = patientEmailInput.value.trim();
+  const activityLevel = patientActivityLevelSelect.value;
 
-const activityLevel = document.getElementById("patient-activityLevel").value;
 
 
   if (!fullName || !age || !gender || !phone) {
@@ -101,8 +114,7 @@ const activityLevel = document.getElementById("patient-activityLevel").value;
     patientGenderSelect.value = '';
     patientPhoneInput.value = '';
     patientEmailInput.value = '';
-    document.getElementById("patient-         activityLevel").value = '';
-
+    patientActivityLevelSelect.value = '';
 
     loadPatients();
   } catch (err) {
@@ -300,5 +312,8 @@ addPatientBtn.addEventListener('click', addPatient);
 refreshPatientsBtn.addEventListener('click', loadPatients);
 patientSelect.addEventListener('change', loadRecordsForSelectedPatient);
 addRecordBtn.addEventListener('click', addRecord);
+recordWeightInput.addEventListener('input', updateBMI);
+recordHeightInput.addEventListener('input', updateBMI);
+
 
 loadPatients();
