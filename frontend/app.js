@@ -1,6 +1,6 @@
 const API_BASE = 'http://localhost:3000';
 
-
+/* ---------------------- ELEMENT REFERENCES ---------------------- */
 const patientFullNameInput = document.getElementById('patient-fullName');
 const patientAgeInput = document.getElementById('patient-age');
 const patientGenderSelect = document.getElementById('patient-gender');
@@ -10,34 +10,27 @@ const patientActivityLevelSelect = document.getElementById('patient-activityLeve
 
 const addPatientBtn = document.getElementById('add-patient-btn');
 const refreshPatientsBtn = document.getElementById('refresh-patients-btn');
+const patientSearchInput = document.getElementById('patient-search');
 const patientSelect = document.getElementById('patient-select');
 
 const selectedPatientLabel = document.getElementById('selected-patient-label');
+const recordDateInput = document.getElementById('record-date');  // DOB
 const recordHeightInput = document.getElementById('record-height');
-const recordDateInput = document.getElementById('record-date');
 const recordWeightInput = document.getElementById('record-weight');
 const recordBmiInput = document.getElementById('record-bmi');
+const bmiCategorySelect = document.getElementById('bmi-category');
 const recordBmrInput = document.getElementById('record-bmr');
 const recordNotesInput = document.getElementById('record-notes');
 const addRecordBtn = document.getElementById('add-record-btn');
 
 const recordsTableBody = document.getElementById('records-table-body');
 const messageElement = document.getElementById('message');
- 
-function updateBMI() {
-  const weight = parseFloat(recordWeightInput.value);
-  const heightCm = parseFloat(recordHeightInput.value);
 
-  if (!isNaN(weight) && !isNaN(heightCm) && heightCm > 0) {
-    const heightM = heightCm / 100;
-    const bmi = weight / (heightM * heightM);
-    recordBmiInput.value = bmi.toFixed(1);
-  }
-}
-
+/* ---------------------- MESSAGE HANDLER ---------------------- */
 function showMessage(text, isError = false) {
   messageElement.textContent = text;
   messageElement.style.color = isError ? 'red' : 'green';
+
   if (text) {
     setTimeout(() => {
       messageElement.textContent = '';
@@ -45,321 +38,236 @@ function showMessage(text, isError = false) {
   }
 }
 
+/* --------------------- BMI CALCULATION ------------------------ */
+function updateBMI() {
+  const weight = parseFloat(recordWeightInput.value);
+  const heightCm = parseFloat(recordHeightInput.value);
+
+  if (!isNaN(weight) && !isNaN(heightCm) && heightCm > 0) {
+    const heightM = heightCm / 100;
+    const bmi = weight / (heightM * heightM);
+    const bmiRounded = bmi.toFixed(1);
+
+    recordBmiInput.value = bmiRounded;
+    autoSelectBmiCategory(bmiRounded);
+  }
+}
+
+/* -------------- Auto-select BMI category ------------------- */
+function autoSelectBmiCategory(bmi) {
+  const value = parseFloat(bmi);
+
+  if (value < 18.5) bmiCategorySelect.value = "Underweight";
+  else if (value < 25) bmiCategorySelect.value = "Healthy Weight";
+  else if (value < 30) bmiCategorySelect.value = "Overweight";
+  else if (value < 35) bmiCategorySelect.value = "Obesity Class 1";
+  else if (value < 40) bmiCategorySelect.value = "Obesity Class 2";
+  else bmiCategorySelect.value = "Obesity Class 3";
+}
+
+/* ----------------------- LOAD PATIENTS ------------------------ */
+let allPatients = [];
+
 async function loadPatients() {
   try {
     const response = await fetch(`${API_BASE}/api/patients`);
-    const patients = await response.json();
+    allPatients = await response.json();
 
-    patientSelect.innerHTML = '<option value="">-- Select patient --</option>';
-
-   patients.forEach(p => {
-  const option = document.createElement('option');
-  option.value = p.id;
-
-  const label = p.activityLevel
-    ? `${p.fullName} (ID: ${p.id}, Activity: ${p.activityLevel})`
-    : `${p.fullName} (ID: ${p.id})`;
-
-  option.textContent = label;
-  patientSelect.appendChild(option);
-});
- 
+    renderPatientList(allPatients);
   } catch (err) {
     console.error(err);
     showMessage('Failed to load patients', true);
   }
 }
 
+/* ----------------------- RENDER PATIENT LIST ------------------ */
+function renderPatientList(patients) {
+  patientSelect.innerHTML = "";
+
+  patients.forEach(p => {
+    const option = document.createElement('option');
+    option.value = p.id;
+    option.textContent = `${p.fullName} (ID: ${p.id})`;
+    patientSelect.appendChild(option);
+  });
+}
+
+/* ----------------------- SEARCH PATIENTS ---------------------- */
+patientSearchInput.addEventListener("input", () => {
+  const query = patientSearchInput.value.toLowerCase();
+
+  const filtered = allPatients.filter(p =>
+    p.fullName.toLowerCase().includes(query)
+  );
+
+  renderPatientList(filtered);
+});
+
+/* ----------------------- ADD PATIENT -------------------------- */
 async function addPatient() {
   const fullName = patientFullNameInput.value.trim();
-  const age = parseInt(patientAgeInput.value, 10);
+  const age = parseInt(patientAgeInput.value);
   const gender = patientGenderSelect.value;
   const phone = patientPhoneInput.value.trim();
   const email = patientEmailInput.value.trim();
   const activityLevel = patientActivityLevelSelect.value;
 
-
-
   if (!fullName || !age || !gender || !phone) {
-    showMessage('Full name, age, gender and phone are required.', true);
+    showMessage("Full name, age, gender and phone are required.", true);
     return;
   }
 
   try {
     const response = await fetch(`${API_BASE}/api/patients`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-      fullName,
-      age,
-      gender,
-      phone,
-      email,
-      activityLevel   // <-- NEW FIELD SENT TO BACKEND
-})
-
+        fullName,
+        age,
+        gender,
+        phone,
+        email,
+        activityLevel
+      })
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      showMessage(errorData.message || 'Failed to add patient', true);
+      const errData = await response.json();
+      showMessage(errData.message || "Error adding patient", true);
       return;
     }
 
-    const newPatient = await response.json();
-    showMessage(`Added patient: ${newPatient.fullName}`);
+    showMessage("Patient added successfully!");
 
-    patientFullNameInput.value = '';
-    patientAgeInput.value = '';
-    patientGenderSelect.value = '';
-    patientPhoneInput.value = '';
-    patientEmailInput.value = '';
-    patientActivityLevelSelect.value = '';
+    // Clear form
+    patientFullNameInput.value = "";
+    patientAgeInput.value = "";
+    patientGenderSelect.value = "";
+    patientPhoneInput.value = "";
+    patientEmailInput.value = "";
+    patientActivityLevelSelect.value = "";
 
-    loadPatients();
+    loadPatients(); // refresh list live
   } catch (err) {
     console.error(err);
-    showMessage('Error adding patient', true);
+    showMessage("Error adding patient", true);
   }
 }
 
+/* ----------------------- LOAD RECORDS ------------------------- */
 async function loadRecordsForSelectedPatient() {
-  const patientId = parseInt(patientSelect.value, 10);
+  const patientId = patientSelect.value;
 
-  recordsTableBody.innerHTML = '';
+  recordsTableBody.innerHTML = "";
 
   if (!patientId) {
-    selectedPatientLabel.textContent = 'No patient selected.';
+    selectedPatientLabel.textContent = "No patient selected.";
     return;
   }
 
-  const selectedOption = patientSelect.options[patientSelect.selectedIndex];
-  selectedPatientLabel.textContent = `Selected patient: ${selectedOption.textContent}`;
+  selectedPatientLabel.textContent = `Selected: ${patientSelect.options[patientSelect.selectedIndex].text}`;
 
   try {
     const response = await fetch(`${API_BASE}/api/patients/${patientId}/records`);
-    if (!response.ok) {
-      showMessage('Failed to load records', true);
-      return;
-    }
-
     let records = await response.json();
 
-    //  Sort by date (newest first)records.sort((a, b) => new      Date(b.date) - new Date(a.date));
-
-    // helper: returns number of days between today and the record date
-function daysSince(dateString) {
-  const today = new Date();
-  const recordDate = new Date(dateString);
-  // use UTC to avoid timezone pitfalls
-  const diffMs = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) -
-                 Date.UTC(recordDate.getFullYear(), recordDate.getMonth(), recordDate.getDate());
-  return Math.floor(diffMs / (1000 * 60 * 60 * 24));
-}
-
-records.forEach(record => {
-  const tr = document.createElement('tr');
-
-  tr.innerHTML = `
-      // --- sort by date (newest first) ---
+    // Sort newest first
     records.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    // helper: returns number of days between today and the record date (UTC-safe)
-    function daysSince(dateString) {
-      const today = new Date();
-      const recordDate = new Date(dateString);
-      const diffMs = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) -
-                     Date.UTC(recordDate.getFullYear(), recordDate.getMonth(), recordDate.getDate());
-      return Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    }
-
-    records.forEach(record => {
-      const tr = document.createElement('tr');
-
-      tr.innerHTML = `
-        <td>${record.id}</td>
-        <td>${record.date}</td>
-        <td>${record.weightKg}</td>
-        <td>${record.bmi}</td>
-        <td>${record.bmr}</td>
-        <td>${record.notes || ''}</td>
-        <td>
-          <button class="edit-record-btn" data-id="${record.id}">Edit</button>
-          <button class="delete-record-btn" data-id="${record.id}">Delete</button>
-        </td>
-      `;
-
-      // highlight if record is within last 7 days
-      try {
-        const ageDays = daysSince(record.date);
-        if (ageDays >= 0 && ageDays <= 7) {
-          // light green background for recent entries
-          tr.style.backgroundColor = 'rgba(198, 255, 198, 0.6)';
-        } else {
-          tr.style.backgroundColor = '';
-        }
-      } catch (e) {
-        // If date parse fails, leave default styling
-        console.warn('Could not parse record date for highlighting:', record.date, e);
-      }
-
-      recordsTableBody.appendChild(tr);
-    });
-
-  recordsTableBody.appendChild(tr);
-});
-
-    attachRecordButtonHandlers();
+    renderRecordTable(records);
   } catch (err) {
     console.error(err);
-    showMessage('Error loading records', true);
+    showMessage("Error loading records", true);
   }
 }
 
-async function addRecord() {
-  const patientId = parseInt(patientSelect.value, 10);
+/* ----------------------- RENDER RECORD TABLE ------------------ */
+function renderRecordTable(records) {
+  recordsTableBody.innerHTML = "";
 
+  const today = new Date();
+
+  records.forEach(record => {
+    const tr = document.createElement("tr");
+
+    const daysOld = (today - new Date(record.date)) / (1000 * 60 * 60 * 24);
+
+    if (daysOld <= 7) tr.classList.add("highlight");
+
+    tr.innerHTML = `
+      <td>${record.date}</td>
+      <td>${record.height || ""}</td>
+      <td>${record.weightKg}</td>
+      <td>${record.bmi}</td>
+      <td>${record.bmr}</td>
+      <td>${record.notes || ""}</td>
+    `;
+
+    recordsTableBody.appendChild(tr);
+  });
+}
+
+/* ----------------------- ADD RECORD --------------------------- */
+async function addRecord() {
+  const patientId = patientSelect.value;
   if (!patientId) {
-    showMessage('Please select a patient first.', true);
+    showMessage("Please select a patient first.", true);
     return;
   }
 
   const date = recordDateInput.value;
+  const height = parseFloat(recordHeightInput.value);
   const weightKg = parseFloat(recordWeightInput.value);
   const bmi = parseFloat(recordBmiInput.value);
   const bmr = parseFloat(recordBmrInput.value);
   const notes = recordNotesInput.value.trim();
 
-  if (!date || isNaN(weightKg) || isNaN(bmi) || isNaN(bmr)) {
-    showMessage('Date, weight, BMI and BMR are required.', true);
+  if (!date || isNaN(height) || isNaN(weightKg) || isNaN(bmi)) {
+    showMessage("DOB, height, weight, and BMI are required.", true);
     return;
   }
 
   try {
     const response = await fetch(`${API_BASE}/api/patients/${patientId}/records`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ date, weightKg, bmi, bmr, notes })
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ date, height, weightKg, bmi, bmr, notes })
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      showMessage(errorData.message || 'Failed to add record', true);
+      const err = await response.json();
+      showMessage(err.message || "Error adding record", true);
       return;
     }
 
-    const newRecord = await response.json();
-    showMessage(`Added record ID ${newRecord.id}`);
+    showMessage("Record added!");
 
-    recordDateInput.value = '';
-    recordWeightInput.value = '';
-    recordBmiInput.value = '';
-    recordBmrInput.value = '';
-    recordNotesInput.value = '';
+    // Reset form
+    recordDateInput.value = "";
+    recordHeightInput.value = "";
+    recordWeightInput.value = "";
+    recordBmiInput.value = "";
+    bmiCategorySelect.value = "";
+    recordBmrInput.value = "";
+    recordNotesInput.value = "";
 
     loadRecordsForSelectedPatient();
   } catch (err) {
     console.error(err);
-    showMessage('Error adding record', true);
+    showMessage("Error adding record", true);
   }
 }
 
-function attachRecordButtonHandlers() {
-  const editButtons = document.querySelectorAll('.edit-record-btn');
-  const deleteButtons = document.querySelectorAll('.delete-record-btn');
+/* ----------------------- EVENT HANDLERS ------------------------ */
+addPatientBtn.addEventListener("click", addPatient);
+refreshPatientsBtn.addEventListener("click", loadPatients);
+patientSelect.addEventListener("change", loadRecordsForSelectedPatient);
 
-  editButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const recordId = parseInt(btn.getAttribute('data-id'), 10);
-      editRecord(recordId);
-    });
-  });
+addRecordBtn.addEventListener("click", addRecord);
 
-  deleteButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const recordId = parseInt(btn.getAttribute('data-id'), 10);
-      deleteRecord(recordId);
-    });
-  });
-}
+// Auto-BMI updates
+recordWeightInput.addEventListener("input", updateBMI);
+recordHeightInput.addEventListener("input", updateBMI);
 
-async function editRecord(recordId) {
-  const row = Array.from(recordsTableBody.querySelectorAll('tr'))
-    .find(tr => parseInt(tr.children[0].textContent, 10) === recordId);
-
-  if (!row) {
-    showMessage('Record row not found in table', true);
-    return;
-  }
-
-  const currentDate = row.children[1].textContent;
-  const currentWeight = row.children[2].textContent;
-  const currentBmi = row.children[3].textContent;
-  const currentBmr = row.children[4].textContent;
-  const currentNotes = row.children[5].textContent;
-
-  const newDate = prompt('Date (YYYY-MM-DD):', currentDate) || currentDate;
-  const newWeight = parseFloat(prompt('Weight (kg):', currentWeight) || currentWeight);
-  const newBmi = parseFloat(prompt('BMI:', currentBmi) || currentBmi);
-  const newBmr = parseFloat(prompt('BMR:', currentBmr) || currentBmr);
-  const newNotes = prompt('Notes:', currentNotes) || currentNotes;
-
-  try {
-    const response = await fetch(`${API_BASE}/api/records/${recordId}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        date: newDate,
-        weightKg: newWeight,
-        bmi: newBmi,
-        bmr: newBmr,
-        notes: newNotes
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      showMessage(errorData.message || 'Failed to update record', true);
-      return;
-    }
-
-    showMessage(`Updated record ID ${recordId}`);
-    loadRecordsForSelectedPatient();
-  } catch (err) {
-    console.error(err);
-    showMessage('Error updating record', true);
-  }
-}
-
-async function deleteRecord(recordId) {
-  const confirmDelete = confirm(`Are you sure you want to delete record ID ${recordId}?`);
-  if (!confirmDelete) return;
-
-  try {
-    const response = await fetch(`${API_BASE}/api/records/${recordId}`, {
-      method: 'DELETE'
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      showMessage(errorData.message || 'Failed to delete record', true);
-      return;
-    }
-
-    showMessage(`Deleted record ID ${recordId}`);
-    loadRecordsForSelectedPatient();
-  } catch (err) {
-    console.error(err);
-    showMessage('Error deleting record', true);
-  }
-}
-
-addPatientBtn.addEventListener('click', addPatient);
-refreshPatientsBtn.addEventListener('click', loadPatients);
-patientSelect.addEventListener('change', loadRecordsForSelectedPatient);
-addRecordBtn.addEventListener('click', addRecord);
-recordWeightInput.addEventListener('input', updateBMI);
-recordHeightInput.addEventListener('input', updateBMI);
-
-
+/* ----------------------- INITIAL LOAD ------------------------- */
 loadPatients();
