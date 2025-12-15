@@ -1,7 +1,6 @@
 console.log("🔥 THIS IS THE ACTIVE SERVER.JS FILE 🔥");
 // Metabolism Tracker Backend API
-// DBS – Programming for Information Systems
-// Option A: Serve frontend from ../frontend
+// the code was changed/modified/improved  with the help of chatgpt 
 
 const express = require('express');
 const cors = require('cors');

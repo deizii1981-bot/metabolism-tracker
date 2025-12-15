@@ -1,3 +1,4 @@
+//this code was taken by ghatgpt and then modified by me for small requirements.
 const API = 'http://localhost:3000';
 const $ = id => document.getElementById(id);
 
