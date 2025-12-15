@@ -1,119 +1,41 @@
 
-//this code made by chatgpt that follows the instructions given by me to make it work as it is expected to.
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>Metabolism Tracker</title>
-
+<title>Metabolism Tracker</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f6f8;
-      margin: 0;
-      padding: 0;
-    }
-
-    .container {
-      max-width: 600px;
-      margin: 40px auto;
-      background: #ffffff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    .section {
-      margin-bottom: 30px;
-    }
-
-    .section h2 {
-      margin-bottom: 15px;
-      border-bottom: 2px solid #ddd;
-      padding-bottom: 5px;
-    }
-
-    input, select, button {
-      width: 100%;
-      padding: 8px;
-      margin: 6px 0;
-    }
-
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    button:hover {
-      background-color: #0056b3;
-    }
-
-    #message {
-      margin-top: 15px;
-      font-weight: bold;
-    }
+    body { font-family: Arial; background:#f4f6f8; }
+    .container { max-width:600px; margin:40px auto; background:#fff; padding:20px; }
+    input, select, button { width:100%; margin:6px 0; padding:8px; }
   </style>
 </head>
-
-<body>
+ <body>
 
 <div class="container">
+  <h2>Add Patient</h2>
+  <input id="patient-fullName" placeholder="Full Name">
+  <input id="patient-dob" type="date">
+  <select id="patient-gender">
+    <option>Male</option><option>Female</option>
+  </select>
+  <input id="patient-phone" placeholder="Phone">
+  <input id="patient-email" placeholder="Email">
+  <button id="add-patient-btn">Add Patient</button>
 
-  <!-- ADD PATIENT -->
-  <div class="section">
-    <h2>Add Patient</h2>
+  <hr>
 
-    <input id="patient-fullName" placeholder="Full Name">
-    <input id="patient-dob" type="date">
+  <h2>Analyse & Store Metabolism Record</h2>
+  <select id="patient-select" size="4"></select>
+  <input id="record-age" readonly placeholder="Age">
+  <input id="record-height" placeholder="Height (cm)">
+  <input id="record-weight" placeholder="Weight (kg)">
+  <input id="record-bmi" readonly placeholder="BMI">
+  <input id="record-bmr" readonly placeholder="BMR">
+  <button id="add-record-btn">Add Record</button>
 
-    <select id="patient-gender">
-      <option value="">Gender</option>
-      <option>Female</option>
-      <option>Male</option>
-    </select>
-
-    <input id="patient-phone" placeholder="Phone">
-    <input id="patient-email" placeholder="Email">
-
-    <button id="add-patient-btn">Add Patient</button>
-  </div>
-
-  <!-- ANALYSE & RECORD -->
-  <div class="section">
-    <h2>Analyse & Store Metabolism Record</h2>
-
-    <label>Patients</label>
-    <select id="patient-select" size="5"></select>
-
-    <label>Age</label>
-    <input id="record-age" readonly>
-
-    <label>Height (cm)</label>
-    <input id="record-height">
-
-    <label>Weight (kg)</label>
-    <input id="record-weight">
-
-    <label>BMI</label>
-    <input id="record-bmi" readonly>
-
-    <label>BMI Category</label>
-    <input id="record-bmi-category" readonly>
-
-    <label>BMR</label>
-    <input id="record-bmr" readonly>
-
-    <button id="add-record-btn">Add Record</button>
-
-    <p id="message"></p>
-
-    <h3>Previous Records</h3>
-    <ul id="records-list"></ul>
-  </div>
-
+  <h3>Previous Records</h3>
+  <ul id="records-list"></ul>
 </div>
 
 <script src="app.js"></script>
