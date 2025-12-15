@@ -1,8 +1,7 @@
+console.log("🔥 THIS IS THE ACTIVE SERVER.JS FILE 🔥");
 // Metabolism Tracker Backend API
-// Name: Anjali Patil
-// Description:
-// This server exposes endpoints to manage patient data and metabolism tracking.
-// Technologies: Node.js, Express, JSON file as a simple database.
+// DBS – Programming for Information Systems
+// Option A: Serve frontend from ../frontend
 
 const express = require('express');
 const cors = require('cors');
@@ -12,194 +11,146 @@ const path = require('path');
 const app = express();
 const PORT = 3000;
 
-// Middleware
+// ---------- MIDDLEWARE ----------
 app.use(cors());
 app.use(express.json());
 
-// Path to our JSON "database"
+// Serve frontend files
+app.use(express.static(path.join(__dirname, '../frontend')));
+
+// ✅ ROOT ROUTE MUST BE HERE
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/index.html'));
+});
+// DEBUG: check if frontend index.html exists
+app.get('/debug-path', (req, res) => {
+  const fullPath = path.join(__dirname, '../frontend/index.html');
+  res.json({
+    exists: fs.existsSync(fullPath),
+    path: fullPath
+  });
+});
+
+// ---------- DATABASE ----------
 const DB_PATH = path.join(__dirname, 'db.json');
 
-// Helper: load database from file
 function loadDB() {
   if (!fs.existsSync(DB_PATH)) {
     return { patients: [], records: [] };
   }
-
-  const raw = fs.readFileSync(DB_PATH, 'utf8');
-
-  if (!raw.trim()) {
-    return { patients: [], records: [] };
-  }
-
-  return JSON.parse(raw);
+  return JSON.parse(fs.readFileSync(DB_PATH, 'utf8'));
 }
 
-// Helper: save database to file
 function saveDB(db) {
   fs.writeFileSync(DB_PATH, JSON.stringify(db, null, 2));
 }
 
-// Helper: generate next numeric ID
-function getNextId(items) {
-  if (!items || items.length === 0) {
-    return 1;
-  }
-  const maxId = Math.max(...items.map(item => item.id));
-  return maxId + 1;
+function nextId(list) {
+  return list.length ? Math.max(...list.map(i => i.id)) + 1 : 1;
 }
 
-// Simple test route
-app.get('/', (req, res) => {
-  res.send('Metabolism Tracker API is running with CRUD');
-});
+// ---------- BUSINESS LOGIC ----------
+function calculateBMI(weight, height) {
+  return +(weight / ((height / 100) ** 2)).toFixed(2);
+}
 
-/*
-  PATIENT ROUTES
-*/
+function calculateBMR(weight, height, age, gender) {
+  return gender === 'male'
+    ? +(10 * weight + 6.25 * height - 5 * age + 5).toFixed(2)
+    : +(10 * weight + 6.25 * height - 5 * age - 161).toFixed(2);
+}
 
-// GET all patients
+// ---------- PATIENT ROUTES ----------
+
+// READ all patients
 app.get('/api/patients', (req, res) => {
-  const db = loadDB();
-  res.json(db.patients);
+  res.json(loadDB().patients);
 });
 
-// CREATE new patient
+// CREATE patient
 app.post('/api/patients', (req, res) => {
-const { fullName, age, gender, phone, email, activityLevel } = req.body;
+  const { fullName, dob, gender, phone, email, activityLevel } = req.body;
 
-
-  if (!fullName || !age || !gender || !phone) {
-    return res.status(400).json({ message: 'fullName, age, gender and phone are required.' });
+  if (!fullName || !dob || !gender || !phone) {
+    return res.status(400).json({ message: 'Missing required fields' });
   }
 
-  // Email format validation (very simple regex)
-if (email && !/^\S+@\S+\.\S+$/.test(email)) {
-  return res.status(400).json({ message: 'Invalid email format.' });
-}
+  const db = loadDB();
 
-const newPatient = {
-  id: getNextId(db.patients),
-  fullName,
-  age,
-  gender,
-  phone,
-  email: email || '',
-  activityLevel: activityLevel || 'Not specified'
-};
+  const patient = {
+    id: nextId(db.patients),
+    fullName,
+    dob,
+    gender,
+    phone,
+    email: email || '',
+    activityLevel: activityLevel || ''
+  };
 
- 
-
-  db.patients.push(newPatient);
+  db.patients.push(patient);
   saveDB(db);
 
-  res.status(201).json(newPatient);
+  res.status(201).json(patient);
 });
 
-/*
-  METABOLISM RECORD ROUTES
-*/
+// DELETE patient
+app.delete('/api/patients/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const db = loadDB();
 
-// GET all records for a patient
+  db.patients = db.patients.filter(p => p.id !== id);
+  db.records = db.records.filter(r => r.patientId !== id);
+
+  saveDB(db);
+  res.json({ message: 'Patient deleted' });
+});
+
+// ---------- RECORD ROUTES ----------
+
+// READ patient records
 app.get('/api/patients/:id/records', (req, res) => {
-  const patientId = parseInt(req.params.id, 10);
+  const id = Number(req.params.id);
   const db = loadDB();
 
-  const patient = db.patients.find(p => p.id === patientId);
-  if (!patient) {
-    return res.status(404).json({ message: 'Patient not found' });
-  }
-
-  const patientRecords = db.records.filter(r => r.patientId === patientId);
-  res.json(patientRecords);
+  res.json(db.records.filter(r => r.patientId === id));
 });
 
-// CREATE a new metabolism record for a patient
+// CREATE record
 app.post('/api/patients/:id/records', (req, res) => {
-  const patientId = parseInt(req.params.id, 10);
-  const { date, weightKg, bmi, bmr, notes } = req.body;
+  const patientId = Number(req.params.id);
+  const { height, weightKg, age, gender, notes } = req.body;
 
-  if (!date || !weightKg || !bmi || !bmr) {
-    return res.status(400).json({ message: 'date, weightKg, bmi and bmr are required.' });
+  if (!height || !weightKg || !age || !gender) {
+    return res.status(400).json({ message: 'Missing required fields' });
   }
+
+  const bmi = calculateBMI(weightKg, height);
+  const bmr = calculateBMR(weightKg, height, age, gender);
 
   const db = loadDB();
 
-  const patient = db.patients.find(p => p.id === patientId);
-  if (!patient) {
-    return res.status(404).json({ message: 'Patient not found' });
-  }
-
-  const newRecord = {
-    id: getNextId(db.records),
+  const record = {
+    id: nextId(db.records),
     patientId,
-    date,
+    height,
     weightKg,
     bmi,
     bmr,
     notes: notes || ''
   };
 
-  db.records.push(newRecord);
+  db.records.push(record);
   saveDB(db);
 
-  res.status(201).json(newRecord);
+  res.status(201).json(record);
 });
 
-// UPDATE an existing metabolism record
-app.put('/api/records/:recordId', (req, res) => {
-  const recordId = parseInt(req.params.recordId, 10);
-  const { date, weightKg, bmi, bmr, notes } = req.body;
-
-  const db = loadDB();
-  const recordIndex = db.records.findIndex(r => r.id === recordId);
-
-  if (recordIndex === -1) {
-    return res.status(404).json({ message: 'Record not found' });
-  }
-
-  const existing = db.records[recordIndex];
-
-  db.records[recordIndex] = {
-    ...existing,
-    date: date || existing.date,
-    weightKg: weightKg ?? existing.weightKg,
-    bmi: bmi ?? existing.bmi,
-    bmr: bmr ?? existing.bmr,
-    notes: notes ?? existing.notes
-  };
-
-  saveDB(db);
-
-  res.json(db.records[recordIndex]);
-});
-
-// DELETE a metabolism record
-app.delete('/api/records/:recordId', (req, res) => {
-  const recordId = parseInt(req.params.recordId, 10);
-  const db = loadDB();
-
-  const recordIndex = db.records.findIndex(r => r.id === recordId);
-
-  if (recordIndex === -1) {
-    return res.status(404).json({ message: 'Record not found' });
-  }
-
-  const deleted = db.records.splice(recordIndex, 1)[0];
-  saveDB(db);
-
-  res.json({ message: 'Record deleted', record: deleted });
-});
-
-// Start server
-// Simple health check endpoint so we can see if the API is running
-
+// ---------- HEALTH CHECK ----------
 app.get('/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    message: 'Metabolism tracker API is running'
-  });
+  res.json({ status: 'ok' });
 });
 
+// ---------- START SERVER ----------
 app.listen(PORT, () => {
-  console.log(`Server listening on http://localhost:${PORT}`);
+  console.log(`✅ Backend running at http://localhost:${PORT}`);
 });

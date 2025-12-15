@@ -1,273 +1,150 @@
-const API_BASE = 'http://localhost:3000';
+const API = 'http://localhost:3000';
+const $ = id => document.getElementById(id);
 
-/* ---------------------- ELEMENT REFERENCES ---------------------- */
-const patientFullNameInput = document.getElementById('patient-fullName');
-const patientAgeInput = document.getElementById('patient-age');
-const patientGenderSelect = document.getElementById('patient-gender');
-const patientPhoneInput = document.getElementById('patient-phone');
-const patientEmailInput = document.getElementById('patient-email');
-const patientActivityLevelSelect = document.getElementById('patient-activityLevel');
+/* ---------- HELPERS ---------- */
 
-const addPatientBtn = document.getElementById('add-patient-btn');
-const refreshPatientsBtn = document.getElementById('refresh-patients-btn');
-const patientSearchInput = document.getElementById('patient-search');
-const patientSelect = document.getElementById('patient-select');
-
-const selectedPatientLabel = document.getElementById('selected-patient-label');
-const recordDateInput = document.getElementById('record-date');  // DOB
-const recordHeightInput = document.getElementById('record-height');
-const recordWeightInput = document.getElementById('record-weight');
-const recordBmiInput = document.getElementById('record-bmi');
-const bmiCategorySelect = document.getElementById('bmi-category');
-const recordBmrInput = document.getElementById('record-bmr');
-const recordNotesInput = document.getElementById('record-notes');
-const addRecordBtn = document.getElementById('add-record-btn');
-
-const recordsTableBody = document.getElementById('records-table-body');
-const messageElement = document.getElementById('message');
-
-/* ---------------------- MESSAGE HANDLER ---------------------- */
-function showMessage(text, isError = false) {
-  messageElement.textContent = text;
-  messageElement.style.color = isError ? 'red' : 'green';
-
-  if (text) {
-    setTimeout(() => {
-      messageElement.textContent = '';
-    }, 3000);
-  }
+function calculateAge(dob) {
+  const birth = new Date(dob);
+  const today = new Date();
+  let age = today.getFullYear() - birth.getFullYear();
+  const m = today.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+  return age;
 }
 
-/* --------------------- BMI CALCULATION ------------------------ */
-function updateBMI() {
-  const weight = parseFloat(recordWeightInput.value);
-  const heightCm = parseFloat(recordHeightInput.value);
+function updateBMIandBMR() {
+  const h = $('record-height').value;
+  const w = $('record-weight').value;
+  const age = $('record-age').value;
+  const select = $('patient-select');
 
-  if (!isNaN(weight) && !isNaN(heightCm) && heightCm > 0) {
-    const heightM = heightCm / 100;
-    const bmi = weight / (heightM * heightM);
-    const bmiRounded = bmi.toFixed(1);
+  if (!h || !w || !age || !select.value) return;
 
-    recordBmiInput.value = bmiRounded;
-    autoSelectBmiCategory(bmiRounded);
-  }
+  const gender = select.selectedOptions[0].dataset.gender;
+
+  const bmi = (w / ((h / 100) ** 2)).toFixed(2);
+  $('record-bmi').value = bmi;
+
+  $('record-bmi-category').value =
+    bmi < 18.5 ? 'Underweight' :
+    bmi < 25 ? 'Normal' :
+    bmi < 30 ? 'Overweight' : 'Obese';
+
+  const bmr = gender === 'male'
+    ? (10 * w + 6.25 * h - 5 * age + 5).toFixed(2)
+    : (10 * w + 6.25 * h - 5 * age - 161).toFixed(2);
+
+  $('record-bmr').value = bmr;
 }
 
-/* -------------- Auto-select BMI category ------------------- */
-function autoSelectBmiCategory(bmi) {
-  const value = parseFloat(bmi);
-
-  if (value < 18.5) bmiCategorySelect.value = "Underweight";
-  else if (value < 25) bmiCategorySelect.value = "Healthy Weight";
-  else if (value < 30) bmiCategorySelect.value = "Overweight";
-  else if (value < 35) bmiCategorySelect.value = "Obesity Class 1";
-  else if (value < 40) bmiCategorySelect.value = "Obesity Class 2";
-  else bmiCategorySelect.value = "Obesity Class 3";
-}
-
-/* ----------------------- LOAD PATIENTS ------------------------ */
-let allPatients = [];
+/* ---------- LOAD PATIENTS ---------- */
 
 async function loadPatients() {
-  try {
-    const response = await fetch(`${API_BASE}/api/patients`);
-    allPatients = await response.json();
+  const res = await fetch(`${API}/api/patients`);
+  const patients = await res.json();
 
-    renderPatientList(allPatients);
-  } catch (err) {
-    console.error(err);
-    showMessage('Failed to load patients', true);
-  }
-}
-
-/* ----------------------- RENDER PATIENT LIST ------------------ */
-function renderPatientList(patients) {
-  patientSelect.innerHTML = "";
+  const select = $('patient-select');
+  select.innerHTML = '';
 
   patients.forEach(p => {
-    const option = document.createElement('option');
-    option.value = p.id;
-    option.textContent = `${p.fullName} (ID: ${p.id})`;
-    patientSelect.appendChild(option);
+    const o = document.createElement('option');
+    o.value = p.id;
+    o.textContent = p.fullName;
+    o.dataset.dob = p.dob;
+    o.dataset.gender = p.gender.toLowerCase();
+    select.appendChild(o);
+  });
+
+  // auto-select first patient
+  if (patients.length) {
+    select.selectedIndex = 0;
+    select.dispatchEvent(new Event('change'));
+  }
+}
+
+/* ---------- LOAD RECORDS ---------- */
+
+async function loadRecords(patientId) {
+  const res = await fetch(`${API}/api/patients/${patientId}/records`);
+  const records = await res.json();
+
+  const list = $('records-list');
+  list.innerHTML = '';
+
+  if (!records.length) {
+    list.innerHTML = '<li>No previous records</li>';
+    return;
+  }
+
+  records.forEach(r => {
+    const li = document.createElement('li');
+    li.textContent =
+      `Height: ${r.height} cm | Weight: ${r.weightKg} kg | BMI: ${r.bmi} | BMR: ${r.bmr}`;
+    list.appendChild(li);
   });
 }
 
-/* ----------------------- SEARCH PATIENTS ---------------------- */
-patientSearchInput.addEventListener("input", () => {
-  const query = patientSearchInput.value.toLowerCase();
+/* ---------- PATIENT SELECTION ---------- */
 
-  const filtered = allPatients.filter(p =>
-    p.fullName.toLowerCase().includes(query)
-  );
+$('patient-select').addEventListener('change', e => {
+  const selected = e.target.selectedOptions[0];
+  if (!selected) return;
 
-  renderPatientList(filtered);
+  $('record-age').value = calculateAge(selected.dataset.dob);
+  updateBMIandBMR();
+  loadRecords(selected.value);
 });
 
-/* ----------------------- ADD PATIENT -------------------------- */
-async function addPatient() {
-  const fullName = patientFullNameInput.value.trim();
-  const age = parseInt(patientAgeInput.value);
-  const gender = patientGenderSelect.value;
-  const phone = patientPhoneInput.value.trim();
-  const email = patientEmailInput.value.trim();
-  const activityLevel = patientActivityLevelSelect.value;
+/* ---------- ADD PATIENT ---------- */
 
-  if (!fullName || !age || !gender || !phone) {
-    showMessage("Full name, age, gender and phone are required.", true);
-    return;
-  }
+$('add-patient-btn').addEventListener('click', async () => {
+  const body = {
+    fullName: $('patient-fullName').value,
+    dob: $('patient-dob').value,
+    gender: $('patient-gender').value,
+    phone: $('patient-phone').value,
+    email: $('patient-email').value
+  };
 
-  try {
-    const response = await fetch(`${API_BASE}/api/patients`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        fullName,
-        age,
-        gender,
-        phone,
-        email,
-        activityLevel
-      })
-    });
-
-    if (!response.ok) {
-      const errData = await response.json();
-      showMessage(errData.message || "Error adding patient", true);
-      return;
-    }
-
-    showMessage("Patient added successfully!");
-
-    // Clear form
-    patientFullNameInput.value = "";
-    patientAgeInput.value = "";
-    patientGenderSelect.value = "";
-    patientPhoneInput.value = "";
-    patientEmailInput.value = "";
-    patientActivityLevelSelect.value = "";
-
-    loadPatients(); // refresh list live
-  } catch (err) {
-    console.error(err);
-    showMessage("Error adding patient", true);
-  }
-}
-
-/* ----------------------- LOAD RECORDS ------------------------- */
-async function loadRecordsForSelectedPatient() {
-  const patientId = patientSelect.value;
-
-  recordsTableBody.innerHTML = "";
-
-  if (!patientId) {
-    selectedPatientLabel.textContent = "No patient selected.";
-    return;
-  }
-
-  selectedPatientLabel.textContent = `Selected: ${patientSelect.options[patientSelect.selectedIndex].text}`;
-
-  try {
-    const response = await fetch(`${API_BASE}/api/patients/${patientId}/records`);
-    let records = await response.json();
-
-    // Sort newest first
-    records.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    renderRecordTable(records);
-  } catch (err) {
-    console.error(err);
-    showMessage("Error loading records", true);
-  }
-}
-
-/* ----------------------- RENDER RECORD TABLE ------------------ */
-function renderRecordTable(records) {
-  recordsTableBody.innerHTML = "";
-
-  const today = new Date();
-
-  records.forEach(record => {
-    const tr = document.createElement("tr");
-
-    const daysOld = (today - new Date(record.date)) / (1000 * 60 * 60 * 24);
-
-    if (daysOld <= 7) tr.classList.add("highlight");
-
-    tr.innerHTML = `
-      <td>${record.date}</td>
-      <td>${record.height || ""}</td>
-      <td>${record.weightKg}</td>
-      <td>${record.bmi}</td>
-      <td>${record.bmr}</td>
-      <td>${record.notes || ""}</td>
-    `;
-
-    recordsTableBody.appendChild(tr);
+  const res = await fetch(`${API}/api/patients`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
   });
-}
 
-/* ----------------------- ADD RECORD --------------------------- */
-async function addRecord() {
-  const patientId = patientSelect.value;
-  if (!patientId) {
-    showMessage("Please select a patient first.", true);
-    return;
-  }
+  $('message').textContent = res.ok ? 'Patient added' : 'Error';
+  loadPatients();
+});
 
-  const date = recordDateInput.value;
-  const height = parseFloat(recordHeightInput.value);
-  const weightKg = parseFloat(recordWeightInput.value);
-  const bmi = parseFloat(recordBmiInput.value);
-  const bmr = parseFloat(recordBmrInput.value);
-  const notes = recordNotesInput.value.trim();
+/* ---------- INPUT LISTENERS ---------- */
 
-  if (!date || isNaN(height) || isNaN(weightKg) || isNaN(bmi)) {
-    showMessage("DOB, height, weight, and BMI are required.", true);
-    return;
-  }
+$('record-height').addEventListener('input', updateBMIandBMR);
+$('record-weight').addEventListener('input', updateBMIandBMR);
 
-  try {
-    const response = await fetch(`${API_BASE}/api/patients/${patientId}/records`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ date, height, weightKg, bmi, bmr, notes })
-    });
+/* ---------- ADD RECORD ---------- */
 
-    if (!response.ok) {
-      const err = await response.json();
-      showMessage(err.message || "Error adding record", true);
-      return;
-    }
+$('add-record-btn').addEventListener('click', async () => {
+  const select = $('patient-select');
+  const patientId = select.value;
 
-    showMessage("Record added!");
+  if (!patientId) return;
 
-    // Reset form
-    recordDateInput.value = "";
-    recordHeightInput.value = "";
-    recordWeightInput.value = "";
-    recordBmiInput.value = "";
-    bmiCategorySelect.value = "";
-    recordBmrInput.value = "";
-    recordNotesInput.value = "";
+  const body = {
+    age: $('record-age').value,
+    height: $('record-height').value,
+    weightKg: $('record-weight').value,
+    gender: select.selectedOptions[0].dataset.gender
+  };
 
-    loadRecordsForSelectedPatient();
-  } catch (err) {
-    console.error(err);
-    showMessage("Error adding record", true);
-  }
-}
+  await fetch(`${API}/api/patients/${patientId}/records`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
 
-/* ----------------------- EVENT HANDLERS ------------------------ */
-addPatientBtn.addEventListener("click", addPatient);
-refreshPatientsBtn.addEventListener("click", loadPatients);
-patientSelect.addEventListener("change", loadRecordsForSelectedPatient);
+  loadRecords(patientId);
+});
 
-addRecordBtn.addEventListener("click", addRecord);
+/* ---------- INIT ---------- */
 
-// Auto-BMI updates
-recordWeightInput.addEventListener("input", updateBMI);
-recordHeightInput.addEventListener("input", updateBMI);
-
-/* ----------------------- INITIAL LOAD ------------------------- */
 loadPatients();

@@ -2,30 +2,68 @@
   "patients": [
     {
       "id": 1,
-      "fullName": "Test Patient",
-      "age": 30,
+      "fullName": "ANJALI PATIL",
+      "dob": "2003-10-02",
       "gender": "Female",
       "phone": "1234567890",
-      "email": ""
+      "email": "anjali@gmail.com",
+      "activityLevel": ""
     },
     {
       "id": 2,
-      "fullName": "Test Patient",
-      "age": 30,
+      "fullName": "PAULA GOMEZ GIL",
+      "dob": "2002-04-09",
       "gender": "Female",
-      "phone": "1234567890",
-      "email": "abcd@1234"
+      "phone": "09876543221",
+      "email": "paula@gmail.com",
+      "activityLevel": ""
+    },
+    {
+      "id": 3,
+      "fullName": "parth shinde",
+      "dob": "2003-11-19",
+      "gender": "Male",
+      "phone": "1243568790",
+      "email": "parth@gmail.com",
+      "activityLevel": ""
+    },
+    {
+      "id": 4,
+      "fullName": "raziq shaikh ",
+      "dob": "2004-12-09",
+      "gender": "Male",
+      "phone": "0978653421",
+      "email": "raziq@gmail.com",
+      "activityLevel": ""
+    },
+    {
+      "id": 5,
+      "fullName": "abdul raziq",
+      "dob": "2002-04-03",
+      "gender": "Male",
+      "phone": "1092837465",
+      "email": "abdulraziq@gmail.com",
+      "activityLevel": ""
     }
   ],
   "records": [
     {
       "id": 1,
-      "patientId": 2,
-      "date": "2025-11-25",
-      "weightKg": 70,
-      "bmi": 23,
-      "bmr": 1500,
-      "notes": "First visit"
+      "patientId": 1,
+      "height": "152",
+      "weightKg": "62",
+      "bmi": 26.84,
+      "bmr": 1299,
+      "notes": ""
+    },
+    {
+      "id": 2,
+      "patientId": 3,
+      "height": "167",
+      "weightKg": "57",
+      "bmi": 20.44,
+      "bmr": 1508.75,
+      "notes": ""
     }
   ]
 }

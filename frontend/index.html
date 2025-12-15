@@ -1,55 +1,56 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Metabolism Tracker</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 900px;
-      margin: auto;
-      padding: 20px;
-      text-align: center;
-    }
-
-    h1, h2, h3 {
-      margin-top: 20px;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 0;
     }
 
     .container {
-      display: flex;
-      gap: 20px;
-      justify-content: center;
-      align-items: flex-start;
-      margin-top: 30px;
-    }
-
-    .box {
-      border: 1px solid #ccc;
+      max-width: 600px;
+      margin: 40px auto;
+      background: #ffffff;
       padding: 20px;
-      width: 45%;
-      background: #fafafa;
       border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
-    table {
-      border-collapse: collapse;
+    .section {
+      margin-bottom: 30px;
+    }
+
+    .section h2 {
+      margin-bottom: 15px;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 5px;
+    }
+
+    input, select, button {
       width: 100%;
-      margin-top: 15px;
+      padding: 8px;
+      margin: 6px 0;
     }
 
-    th, td {
-      border: 1px solid #aaa;
-      padding: 6px;
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 10px;
     }
 
-    tr.highlight {
-      background-color: rgba(198, 255, 198, 0.6);
+    button:hover {
+      background-color: #0056b3;
     }
 
     #message {
-      margin-top: 20px;
+      margin-top: 15px;
       font-weight: bold;
     }
   </style>
@@ -57,126 +58,62 @@
 
 <body>
 
-  <h1>Metabolism Tracker</h1>
+<div class="container">
 
-  <div class="container">
+  <!-- ADD PATIENT -->
+  <div class="section">
+    <h2>Add Patient</h2>
 
-    <!-- LEFT SIDE: PATIENT FORM -->
-    <div class="box">
-      <h2>Add Patient</h2>
+    <input id="patient-fullName" placeholder="Full Name">
+    <input id="patient-dob" type="date">
 
-      <label>Full Name:<br>
-        <input id="patient-fullName" type="text" />
-      </label><br><br>
+    <select id="patient-gender">
+      <option value="">Gender</option>
+      <option>Female</option>
+      <option>Male</option>
+    </select>
 
-      <label>Age:<br>
-        <input id="patient-age" type="number" min="0" />
-      </label><br><br>
+    <input id="patient-phone" placeholder="Phone">
+    <input id="patient-email" placeholder="Email">
 
-      <label>Gender:<br>
-        <select id="patient-gender">
-          <option value="">-- Select --</option>
-          <option value="Female">Female</option>
-          <option value="Male">Male</option>
-          <option value="Other">Other</option>
-        </select>
-      </label><br><br>
-
-      <label>Phone:<br>
-        <input id="patient-phone" type="text" />
-      </label><br><br>
-
-      <label>Email:<br>
-        <input id="patient-email" type="email" />
-      </label><br><br>
-
-      <label>Activity Level:<br>
-        <select id="patient-activityLevel">
-          <option value="">-- Select --</option>
-          <option value="Low">Low — Mostly sedentary lifestyle</option>
-          <option value="Moderate">Moderate — Light exercise 1–3 days/week</option>
-          <option value="High">High — Intense activity 4+ days/week</option>
-        </select>
-      </label><br><br>
-
-      <button id="add-patient-btn">Add Patient</button>
-
-      <h3>Search Patients</h3>
-      <input id="patient-search" type="text" placeholder="Search by name..." />
-      
-      <h3>Patients</h3>
-      <select id="patient-select" size="6" style="width: 100%"></select>
-      <br><br>
-      <button id="refresh-patients-btn">Refresh List</button>
-
-    </div>
-
-
-    <!-- RIGHT SIDE: RECORDS -->
-    <div class="box">
-      <h2>Metabolism Records</h2>
-      <p id="selected-patient-label">No patient selected.</p>
-
-      <h3>Add Record</h3>
-
-      <label>DOB (Date of Birth):<br>
-        <input id="record-date" type="date" />
-      </label><br><br>
-
-      <label>Height (cm):<br>
-        <input id="record-height" type="number" />
-      </label><br><br>
-
-      <label>Weight (kg):<br>
-        <input id="record-weight" type="number" step="0.1" />
-      </label><br><br>
-
-      <label>BMI:<br>
-        <input id="record-bmi" type="number" step="0.1" readonly />
-      </label><br><br>
-
-      <label>BMI Category:<br>
-        <select id="bmi-category">
-          <option value="">Auto-selected</option>
-          <option value="Underweight">Underweight</option>
-          <option value="Healthy Weight">Healthy Weight</option>
-          <option value="Overweight">Overweight</option>
-          <option value="Obesity Class 1">Obesity Class 1</option>
-          <option value="Obesity Class 2">Obesity Class 2</option>
-          <option value="Obesity Class 3">Obesity Class 3</option>
-        </select>
-      </label><br><br>
-
-      <label>BMR:<br>
-        <input id="record-bmr" type="number" />
-      </label><br><br>
-
-      <label>Notes:<br>
-        <input id="record-notes" type="text" />
-      </label><br><br>
-
-      <button id="add-record-btn">Add Record</button>
-
-      <h3>Existing Records</h3>
-      <table>
-        <thead>
-          <tr>
-            <th>DOB</th>
-            <th>Height</th>
-            <th>Weight</th>
-            <th>BMI</th>
-            <th>BMR</th>
-            <th>Notes</th>
-          </tr>
-        </thead>
-        <tbody id="records-table-body"></tbody>
-      </table>
-
-    </div>
+    <button id="add-patient-btn">Add Patient</button>
   </div>
 
-  <p id="message"></p>
+  <!-- ANALYSE & RECORD -->
+  <div class="section">
+    <h2>Analyse & Store Metabolism Record</h2>
 
-  <script src="app.js"></script>
+    <label>Patients</label>
+    <select id="patient-select" size="5"></select>
+
+    <label>Age</label>
+    <input id="record-age" readonly>
+
+    <label>Height (cm)</label>
+    <input id="record-height">
+
+    <label>Weight (kg)</label>
+    <input id="record-weight">
+
+    <label>BMI</label>
+    <input id="record-bmi" readonly>
+
+    <label>BMI Category</label>
+    <input id="record-bmi-category" readonly>
+
+    <label>BMR</label>
+    <input id="record-bmr" readonly>
+
+    <button id="add-record-btn">Add Record</button>
+
+    <p id="message"></p>
+
+    <h3>Previous Records</h3>
+    <ul id="records-list"></ul>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
 </body>
 </html>
