@@ -1,300 +1,89 @@
 * #  Metabolism Tracker — Clinic Information System
 
+This project is a simple clinical information system developed to understand how patient data can be collected, processed, stored, and reused within a healthcare context. I chose a metabolism tracking system because it allowed me to work with realistic health-related data such as height, weight, age, and gender, and to apply calculations like BMI and BMR. As a beginner, this project helped me understand how an information system works end-to-end, including frontend interaction, backend logic, data storage, and deployment.
 
+Technologies and Tools Used
 
-A full-stack JavaScript-based information system built for a clinic to track:
+HTML, CSS, and JavaScript for the frontend interface
 
+Node.js and Express.js for the backend API
 
+JSON-based file storage for managing patient and record data
 
- 	Patient demographic details
+Jest for basic automated backend testing
 
+Render for hosting and deployment
 
+Features and Enhancements Implemented
 
- 	Metabolism records (Weight, BMI, BMR, Notes, Date)
+Patient registration with personal details
 
+Automatic age calculation from date of birth
 
+Automatic BMI and BMR calculation based on height, weight, age, and gender
 
- 	CRUD operations through a custom backend API
+Storage and display of multiple metabolism records per patient
 
+Ability to delete existing records
 
+Persistent storage enabled on the hosted version to prevent data loss
 
- 	Frontend interface for clinic staff
+Challenges Faced During Development
 
+Initially faced issues with frontend and backend communication, especially when working with API requests
 
+Encountered problems after deployment due to hardcoded localhost URLs, which were fixed by using relative API paths
 
- 	lightweight database based on a JSON File
+Data loss on the hosted environment was resolved by enabling persistent storage on Render
 
+These issues were identified and fixed through manual testing, debugging, and reviewing network requests
 
+Testing Performed
 
- 	Automated testing
+Basic automated tests were implemented using Jest to verify that the backend API endpoints are accessible and functioning correctly. These tests focus on ensuring that the server runs correctly and that core patient-related routes respond as expected. In addition to automated tests, manual testing was carried out to verify frontend functionality such as adding patients, calculating BMI and BMR, displaying records, and deleting records.
 
+To run the automated tests locally:
 
+cd backend
+npm install
+node server.js
+npm test
 
-* This project is built as part of a university module focusing on:
+Project Links
 
+GitHub Repository:
+https://github.com/deizii1981-bot/metabolism-tracker
 
+Live Application (Render):
+https://metabolism-tracker.onrender.com
 
- 	API design
+Running Automated Tests (Jest)
+Follow these steps to run the automated test suite used in this project:
 
+Open a terminal inside the backend folder:
+cd backend
 
+Install all required backend dependencies:
+npm install
 
- 	CRUD implementation
+Ensure the backend server is running in another window:
+node server.js
 
+Run the Jest test suite:
+npm test
 
+The following tests will run:
+patient.test.js – verifies that the database file loads correctly
+api.test.js – integration test that checks the API root endpoint
+All tests must pass for the system to be considered fully operational.
 
- 	Folder architecture
+AI Assistance Disclosure:
 
-
-
- 	Testing
-
-
-
- 	Version control (Git \& GitHub)
-
-
-
- 	Real-world applied information systems
-
-
-
-*  Technologies Used
-
-
-
-1. Backend:
-
-
-
- 	Node.js
-
-
-
- 	Express.js
-
-
-
- 	CORS
-
-
-
- 	JSON File Database (db.json)
-
-
-
- 	Custom-built CRUD API
-
-* &nbsp;API Endpoints (Backend Overview)
-
-
-
-&nbsp;   The backend is a simple REST-style API built with Node.js and Express.  
-
-&nbsp;   Key endpoints:
-
-
-
-&nbsp;   - `GET /`  
-
-&nbsp;   Returns a basic “API running” message. Used for quick health checks.
-
-
-
-&nbsp;   - `GET /patients`  
-
-&nbsp;   Returns the list of all patients stored in the JSON database.
-
-
-
-&nbsp;   - `POST /patients`  
-
-&nbsp;   Creates a new patient with metabolism-related details (e.g. age, weight, activity        level).
-
-
-
-&nbsp;   - `PUT /patients/:id`  
-
-&nbsp;   Updates an existing patient record.
-
-
-
-&nbsp;   - `DELETE /patients/:id`  
-
-&nbsp;   Deletes a patient record by ID.
-
-
-
-&nbsp;   All responses are returned in JSON format, and the data is stored in              `backend/db.json` for this prototype.
-
-
-
-
-
-2.Frontend:
-
-
-
- 	HTML5
-
-
-
- 	Vanilla JavaScript
-
-
-
- 	Fetch API
-
-
-
-3.Version Control:
-
-
-
- 	Git
-
-
-
- 	GitHub
-
-
-
-* Project Folder Structure
-
-
-
-metabolism-tracker/
-
-│
-
-├── backend/
-
-│   ├── server.js  - Main API server
-
-│   ├── db.json    - JSON database
-
-│   ├── package.json  -Backend dependencies
-
-│   └── node\_modules/  -Auto-installed dependencies
-
-│
-
-├── frontend/
-
-│   ├── index.html  - Main UI
-
-│   └── app.js      - API calls + UI logic
-
-│
-
-└── README.md       - Documentation
-
-
-
-
-
-The endpoints are tested using the frontend UI.
-
-
-
-*  Key Features
-
-
-
-1\. Add patients
-
-2\. View patients
-
-3\. Add metabolism records
-
-4\. CRUD for records
-
-5\. JSON local DB
-
-6\. Full working UI
-
-7\. Full working backend API
-
-8\. GitHub version control
-
-9\. Real-world architecture
-
-
-
-
-
-
+Some initial guidance was assisted by ChatGPT. The final implementation was reviewed, modified, debugged, and extended by me, and all features were tested and understood during development.
 
 Name: Anjali Patil
 
 Student ID: 20079200
 
-College: Dublin Business School
-
 Metabolism Tracker — Clinic Information System
-
-
-
-
-
-📦 Running Automated Tests (Jest)
-
-
-
-Follow these steps to run the automated test suite used in this project:
-
-
-
-Open a terminal inside the backend folder:
-
-
-
-cd backend
-
-
-
-
-
-Install all required backend dependencies:
-
-
-
-npm install
-
-
-
-
-
-Ensure the backend server is running in another window:
-
-
-
-node server.js
-
-
-
-
-
-Run the Jest test suite:
-
-
-
-npm test
-
-
-
-
-
-The following tests will run:
-
-
-
-patient.test.js – verifies that the database file loads correctly
-
-
-
-api.test.js – integration test that checks the API root endpoint
-
-
-
-All tests must pass for the system to be considered fully operational.
 
