@@ -57,6 +57,9 @@ https://github.com/deizii1981-bot/metabolism-tracker
 Live Application (Render):
 https://metabolism-tracker.onrender.com
 
+chatGPT chat: 
+https://chatgpt.com/share/6940892a-e670-8011-bc8e-a203f7fc668b
+
 Running Automated Tests (Jest)
 Follow these steps to run the automated test suite used in this project:
 
