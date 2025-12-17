@@ -1,5 +1,5 @@
-
-// code was reviewed, modified, and extended by the me
+// Initial structure assisted by ChatGPT.
+// Reviewed, modified, and implemented by the author.
 
 const express = require('express');
 const cors = require('cors');
@@ -12,14 +12,10 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json());
 
-const FRONTEND_PATH = path.join(__dirname, '..', 'frontend');
-app.use(express.static(FRONTEND_PATH));
-
-app.get('/', (req, res) => {
-  res.sendFile(path.join(FRONTEND_PATH, 'index.html'));
-});
-
-const DB_PATH = path.join(__dirname, 'db.json');
+/* ---------- DATABASE ---------- */
+const DB_PATH = process.env.RENDER
+  ? '/data/db.json'
+  : path.join(__dirname, 'db.json');
 
 function loadDB() {
   if (!fs.existsSync(DB_PATH)) return { patients: [], records: [] };
@@ -34,7 +30,11 @@ function nextId(list) {
   return list.length ? Math.max(...list.map(i => i.id)) + 1 : 1;
 }
 
-/* ---------- PATIENTS ---------- */
+/* ---------- API ROUTES FIRST ---------- */
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'API running' });
+});
 
 app.get('/api/patients', (req, res) => {
   res.json(loadDB().patients);
@@ -47,8 +47,6 @@ app.post('/api/patients', (req, res) => {
   saveDB(db);
   res.status(201).json(patient);
 });
-
-/* ---------- RECORDS ---------- */
 
 app.get('/api/patients/:id/records', (req, res) => {
   const db = loadDB();
@@ -67,22 +65,14 @@ app.post('/api/patients/:id/records', (req, res) => {
   res.status(201).json(record);
 });
 
-app.put('/api/records/:id', (req, res) => {
-  const db = loadDB();
-  const rec = db.records.find(r => r.id == req.params.id);
-  if (!rec) return res.sendStatus(404);
-  Object.assign(rec, req.body);
-  saveDB(db);
-  res.json(rec);
+/* ---------- FRONTEND LAST ---------- */
+const FRONTEND_PATH = path.join(__dirname, '..', 'frontend');
+app.use(express.static(FRONTEND_PATH));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(FRONTEND_PATH, 'index.html'));
 });
 
-app.delete('/api/records/:id', (req, res) => {
-  const db = loadDB();
-  db.records = db.records.filter(r => r.id != req.params.id);
-  saveDB(db);
-  res.sendStatus(204);
+app.listen(PORT, () => {
+  console.log(`✅ Backend running at http://localhost:${PORT}`);
 });
-
-app.listen(PORT, () =>
-  console.log(`✅ Backend running at http://localhost:${PORT}`)
-);
